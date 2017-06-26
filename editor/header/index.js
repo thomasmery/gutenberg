@@ -16,10 +16,10 @@ import './style.scss';
 import ModeSwitcher from './mode-switcher';
 import SavedState from './saved-state';
 import Tools from './tools';
-import { getMultiSelectedBlockUids } from '../selectors';
+import { isEditorSidebarOpened, getMultiSelectedBlockUids } from '../selectors';
 import { clearSelectedBlock } from '../actions';
 
-function Header( { multiSelectedBlockUids, onRemove, onDeselect } ) {
+function Header( { multiSelectedBlockUids, onRemove, onDeselect, isSidebarOpened, toggleSidebar } ) {
 	const count = multiSelectedBlockUids.length;
 
 	if ( count ) {
@@ -38,12 +38,19 @@ function Header( { multiSelectedBlockUids, onRemove, onDeselect } ) {
 						{ __( 'Delete' ) }
 					</IconButton>
 				</div>
-				<div className="editor-selected-clear">
-					<IconButton
-						icon="no"
-						label={ __( 'Clear selected blocks' ) }
-						onClick={ () => onDeselect() }
-					/>
+				<div className="editor-tools">
+					<div className="editor-tools__tabs">
+						<IconButton icon="admin-generic" onClick={ toggleSidebar } isToggled={ isSidebarOpened }>
+							{ __( 'Post Settings' ) }
+						</IconButton>
+					</div>
+					<div className="editor-selected-clear">
+						<IconButton
+							icon="no"
+							label={ __( 'Clear selected blocks' ) }
+							onClick={ () => onDeselect() }
+						/>
+					</div>
 				</div>
 			</header>
 		);
@@ -61,8 +68,10 @@ function Header( { multiSelectedBlockUids, onRemove, onDeselect } ) {
 export default connect(
 	( state ) => ( {
 		multiSelectedBlockUids: getMultiSelectedBlockUids( state ),
+		isSidebarOpened: isEditorSidebarOpened( state ),
 	} ),
 	( dispatch ) => ( {
+		toggleSidebar: () => dispatch( { type: 'TOGGLE_SIDEBAR' } ),
 		onDeselect: () => dispatch( clearSelectedBlock() ),
 		onRemove: ( uids ) => dispatch( {
 			type: 'REMOVE_BLOCKS',

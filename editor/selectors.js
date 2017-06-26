@@ -287,6 +287,22 @@ export function getBlockCount( state ) {
 }
 
 /**
+ * Returns the number of blocks currently selected in the post.
+ *
+ * @param  {Object} state Global application state
+ * @return {Object}       Number of blocks selected in the post
+ */
+export function getSelectedBlockCount( state ) {
+	const multiSelectedBlockCount = getMultiSelectedBlockUids( state ).length;
+
+	if ( multiSelectedBlockCount ) {
+		return multiSelectedBlockCount;
+	}
+
+	return state.selectedBlock.uid ? 1 : 0;
+}
+
+/**
  * Returns the currently selected block, or null if there is no selected block.
  *
  * @param  {Object}  state Global application state

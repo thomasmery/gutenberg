@@ -14,13 +14,15 @@ import { withFocusReturn } from 'components';
 import './style.scss';
 import PostSettings from './post-settings';
 import BlockInspector from './block-inspector';
-import { getSelectedBlock } from '../selectors';
+import MultiBlockInspector from './multi-block-inspector';
+import { getSelectedBlockCount } from '../selectors';
 
-const Sidebar = ( { selectedBlock } ) => {
+const Sidebar = ( { selectedBlockCount } ) => {
 	return (
 		<div className="editor-sidebar">
-			{ ! selectedBlock && <PostSettings /> }
-			{ selectedBlock && <BlockInspector /> }
+			{ selectedBlockCount === 0 && <PostSettings /> }
+			{ selectedBlockCount === 1 && <BlockInspector /> }
+			{ selectedBlockCount > 1 && <MultiBlockInspector /> }
 		</div>
 	);
 };
@@ -28,7 +30,7 @@ const Sidebar = ( { selectedBlock } ) => {
 export default connect(
 	( state ) => {
 		return {
-			selectedBlock: getSelectedBlock( state ),
+			selectedBlockCount: getSelectedBlockCount( state ),
 		};
 	}
 )( withFocusReturn( Sidebar ) );

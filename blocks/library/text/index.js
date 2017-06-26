@@ -53,6 +53,22 @@ registerBlockType( 'core/text', {
 		};
 	},
 
+	multiSelectedControls( { attributes, setAttributes } ) {
+		const value = attributes.reduce( ( acc, { align } ) => {
+			return acc === align ? acc : null;
+		}, attributes[ 0 ].align );
+
+		return [
+			<AlignmentToolbar
+				key="alignment-toolbar"
+				value={ value }
+				onChange={ ( nextAlign ) => {
+					setAttributes( { align: nextAlign } );
+				} }
+			/>,
+		];
+	},
+
 	edit( { attributes, setAttributes, insertBlocksAfter, focus, setFocus, mergeBlocks } ) {
 		const { align, content, dropCap } = attributes;
 		const toggleDropCap = () => setAttributes( { dropCap: ! dropCap } );
