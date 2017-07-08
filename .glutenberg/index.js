@@ -1,10 +1,11 @@
 import { addStory } from 'glutenberg';
 
-import intro from './readme.md';
-import faq from './faq.md';
-import step1 from './blocks-basic.md';
-import step2 from './blocks-stylesheet.md';
-import step3 from './blocks-editable.md';
+import intro from '../docs/readme.md';
+import faq from '../docs/faq.md';
+import step1 from '../docs/blocks-basic.md';
+import step2 from '../docs/blocks-stylesheet.md';
+import step3 from '../docs/blocks-editable.md';
+import '../components/button/story';
 
 addStory( {
 	name: 'intro',

@@ -1,9 +1,9 @@
 /**
  * External dependencies
  */
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import { storiesOf } from '@storybook/react';
-import { text, boolean, withKnobs } from '@storybook/addon-knobs';
+import { addStory } from 'glutenberg';
 
 /**
  * Internal dependencies
@@ -11,34 +11,17 @@ import { text, boolean, withKnobs } from '@storybook/addon-knobs';
 import Button from '../';
 import readme from '../README.md';
 
-const decorateWordPressUI = ( story ) => (
-	<div className="wp-core-ui">
-		{ story() }
-	</div>
-);
-
-const defaultInfoConfig = {
-	header: true,
-	inline: true,
-	propTables: false,
-	styles: ( style ) => ( { ...style, header: { ...style.header, h1: { display: 'none' } } } ),
-};
-
-storiesOf( 'Components', module )
-	.addDecorator( decorateWordPressUI )
-	.addDecorator( withKnobs )
-	.addWithInfo(
-		'Button',
-		( <ReactMarkdown source={ readme } /> ),
-		() => (
-			<Button
-				isPrimary={ boolean( 'isPrimary', true ) }
-				isLarge={ boolean( 'isLarge', false ) }
-				isToggled={ boolean( 'isToggled', false ) }
-				disabled={ boolean( 'disabled', false ) }
-			>
-				{ text( 'Label', 'Default Label' ) }
-			</Button>
-		),
-		defaultInfoConfig
-	);
+addStory( {
+	name: 'button',
+	title: 'Button',
+	Component() {
+		return (
+			<div className="wp-core-ui">
+				<ReactMarkdown source={ readme } />
+				<Button isPrimary>
+					{ 'Awesome Button' }
+				</Button>
+			</div>
+		);
+	},
+} );
