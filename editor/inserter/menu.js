@@ -35,7 +35,6 @@ class InserterMenu extends Component {
 		this.searchBlocks = this.searchBlocks.bind( this );
 		this.getBlocksForCurrentTab = this.getBlocksForCurrentTab.bind( this );
 		this.sortBlocks = this.sortBlocks.bind( this );
-		this.addRecentBlocks = this.addRecentBlocks.bind( this );
 	}
 
 	componentDidMount() {
@@ -98,11 +97,6 @@ class InserterMenu extends Component {
 		return sortBy( blockTypes, getCategoryIndex );
 	}
 
-	addRecentBlocks( blocksByCategory ) {
-		blocksByCategory.recent = this.props.recentlyUsedBlocks;
-		return blocksByCategory;
-	}
-
 	groupByCategory( blockTypes ) {
 		return groupBy( blockTypes, ( blockType ) => blockType.category );
 	}
@@ -111,8 +105,7 @@ class InserterMenu extends Component {
 		return flow(
 			this.searchBlocks,
 			this.sortBlocks,
-			this.groupByCategory,
-			this.addRecentBlocks
+			this.groupByCategory
 		)( blockTypes );
 	}
 
@@ -249,7 +242,11 @@ class InserterMenu extends Component {
 		this.changeMenuSelection( 'search' );
 	}
 
-	getBlockItem( block ) {
+	switchTab( tab ) {
+		this.setState( { tab: tab } );
+	}
+
+	renderBlock( block ) {
 		return (
 			<button
 				role="menuitem"
@@ -267,14 +264,48 @@ class InserterMenu extends Component {
 		);
 	}
 
-	switchTab( tab ) {
-		this.setState( { tab: tab } );
+	renderBlocks( separatorSlug, blocks ) {
+		const { instanceId } = this.props;
+		return (
+			<div
+				className="editor-inserter__category-blocks"
+				role="menu"
+				tabIndex="0"
+				aria-labelledby={ `editor-inserter__separator-${ separatorSlug }-${ instanceId }` }
+			>
+				{ blocks.map( ( block ) => this.renderBlock( block ) ) }
+			</div>
+		);
+	}
+
+	renderCategory( category, blocks ) {
+		const { instanceId } = this.props;
+		return blocks && (
+			<div key={ category.slug }>
+				<div
+					className="editor-inserter__separator"
+					id={ `editor-inserter__separator-${ category.slug }-${ instanceId }` }
+					aria-hidden="true"
+				>
+					{ category.title }
+				</div>
+				{ this.renderBlocks( category.slug, blocks ) }
+			</div>
+		);
+	}
+
+	renderCategories( visibleBlocksByCategory ) {
+		return getCategories().map(
+			( category ) => this.renderCategory( category, visibleBlocksByCategory[ category.slug ] )
+		);
 	}
 
 	render() {
 		const { position, instanceId } = this.props;
-		const isSearching = this.state.filterValue;
 		const visibleBlocksByCategory = this.getVisibleBlocksByCategory( this.getBlocksForCurrentTab() );
+		const isSearching = this.state.filterValue;
+		const isShowingEmbeds = ! isSearching && 'embeds' === this.state.tab;
+		const isShowingRecent = ! isSearching && 'recent' === this.state.tab;
 
 		/* eslint-disable jsx-a11y/no-autofocus */
 		return (
@@ -293,79 +324,13 @@ class InserterMenu extends Component {
 					ref={ this.bindReferenceNode( 'search' ) }
 					tabIndex="-1"
 				/>
+
 				<div role="menu" className="editor-inserter__content">
-					{ this.state.tab === 'recent' && ! isSearching &&
-						<div className="editor-inserter__recent">
-							<div
-								className="editor-inserter__category-blocks"
-								role="menu"
-								tabIndex="0"
-								aria-labelledby={ `editor-inserter__separator-${ 'recent' }-${ instanceId }` }
-								key={ 'recent' }
-							>
-								{ visibleBlocksByCategory.recent.map( ( block ) => this.getBlockItem( block ) ) }
-							</div>
-						</div>
-					}
-					{ this.state.tab === 'blocks' && ! isSearching &&
-						getCategories()
-							.map( ( category ) => category.slug !== 'embed' && !! visibleBlocksByCategory[ category.slug ] && (
-								<div key={ category.slug }>
-									<div
-										className="editor-inserter__separator"
-										id={ `editor-inserter__separator-${ category.slug }-${ instanceId }` }
-										aria-hidden="true"
-									>
-										{ category.title }
-									</div>
-									<div
-										className="editor-inserter__category-blocks"
-										role="menu"
-										tabIndex="0"
-										aria-labelledby={ `editor-inserter__separator-${ category.slug }-${ instanceId }` }
-									>
-										{ visibleBlocksByCategory[ category.slug ].map( ( block ) => this.getBlockItem( block ) ) }
-									</div>
-								</div>
-							) )
-					}
-					{ this.state.tab === 'embeds' && ! isSearching &&
-						getCategories()
-							.map( ( category ) => category.slug === 'embed' && !! visibleBlocksByCategory[ category.slug ] && (
-								<div
-									className="editor-inserter__category-blocks"
-									role="menu"
-									tabIndex="0"
-									aria-labelledby={ `editor-inserter__separator-${ category.slug }-${ instanceId }` }
-									key={ category.slug }
-								>
-									{ visibleBlocksByCategory[ category.slug ].map( ( block ) => this.getBlockItem( block ) ) }
-								</div>
-							) )
-					}
-					{ isSearching &&
-						getCategories()
-							.map( ( category ) => !! visibleBlocksByCategory[ category.slug ] && (
-								<div key={ category.slug }>
-									<div
-										className="editor-inserter__separator"
-										id={ `editor-inserter__separator-${ category.slug }-${ instanceId }` }
-										aria-hidden="true"
-									>
-										{ category.title }
-									</div>
-									<div
-										className="editor-inserter__category-blocks"
-										role="menu"
-										tabIndex="0"
-										aria-labelledby={ `editor-inserter__separator-${ category.slug }-${ instanceId }` }
-									>
-										{ visibleBlocksByCategory[ category.slug ].map( ( block ) => this.getBlockItem( block ) ) }
-									</div>
-								</div>
-							) )
-					}
+					{ isShowingRecent && this.renderBlocks( 'recent', this.props.recentlyUsedBlocks ) }
+					{ isShowingEmbeds && this.renderBlocks( 'embed', visibleBlocksByCategory.embed ) }
+					{ ! isShowingRecent && ! isShowingEmbeds && this.renderCategories( visibleBlocksByCategory ) }
 				</div>
+
 				{ ! isSearching &&
 					<div className="editor-inserter__tabs is-recent">
 						<button
