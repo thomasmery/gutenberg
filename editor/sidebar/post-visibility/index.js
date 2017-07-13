@@ -10,7 +10,8 @@ import { withInstanceId } from 'components';
  * WordPress dependencies
  */
 import { __ } from 'i18n';
-import { Component } from 'element';
+import { Component, findDOMNode } from 'element';
+import { ESCAPE } from 'utils/keycodes';
 
 /**
  * Internal Dependencies
@@ -30,6 +31,8 @@ class PostVisibility extends Component {
 		this.setPublic = this.setPublic.bind( this );
 		this.setPrivate = this.setPrivate.bind( this );
 		this.setPasswordProtected = this.setPasswordProtected.bind( this );
+		this.handleKeyDown = this.handleKeyDown.bind( this );
+		this.handleBlur = this.handleBlur.bind( this );
 
 		this.state = {
 			opened: false,
@@ -69,6 +72,45 @@ class PostVisibility extends Component {
 
 	handleClickOutside() {
 		this.setState( { opened: false } );
+	}
+
+	handleBlur( event ) {
+		if ( this.state.opened && event.relatedTarget !== null ) {
+			const wrapper = findDOMNode( this );
+			const toggle = wrapper.querySelector( '.editor-post-visibility__toggle' );
+			const dialog = wrapper.querySelector( '.editor-post-visibility__dialog' );
+
+			if ( ! dialog.contains( event.relatedTarget ) ) {
+				this.setState( { opened: false } );
+				toggle.focus();
+			}
+		}
+	}
+
+	handleKeyDown( event ) {
+		if ( this.state.opened && event.keyCode === ESCAPE ) {
+			const wrapper = findDOMNode( this );
+			const toggle = wrapper.querySelector( '.editor-post-visibility__toggle' );
+
+			if ( event.target === toggle ) {
+				return;
+			}
+
+			event.preventDefault();
+			event.stopPropagation();
+			this.setState( { opened: false } );
+			toggle.focus();
+		}
+	}
+
+	componentDidMount() {
+		const node = findDOMNode( this );
+		node.addEventListener( 'keydown', this.handleKeyDown, false );
+	}
+
+	componentWillUnmount() {
+		const node = findDOMNode( this );
+		node.removeEventListener( 'keydown', this.handleKeyDown, false );
 	}
 
 	render() {
@@ -116,7 +158,7 @@ class PostVisibility extends Component {
 				</button>
 
 				{ this.state.opened &&
-					<div className="editor-post-visibility__dialog">
+					<div className="editor-post-visibility__dialog" onBlur={ this.handleBlur }>
 						<div className="editor-post-visibility__dialog-arrow" />
 						<fieldset>
 							<legend className="editor-post-visibility__dialog-legend">
