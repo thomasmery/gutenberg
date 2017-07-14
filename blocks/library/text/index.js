@@ -29,6 +29,9 @@ registerBlockType( 'core/text', {
 
 	attributes: {
 		content: query( 'p', children() ),
+		align: String,
+		dropCap: Boolean,
+		placeholder: Object, // Array
 	},
 
 	transforms: {

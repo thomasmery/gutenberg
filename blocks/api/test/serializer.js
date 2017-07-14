@@ -6,6 +6,7 @@ import { createElement, Component } from 'element';
 /**
  * Internal dependencies
  */
+import { text } from '../query';
 import serialize, { getCommentAttributes, getSaveContent, serializeAttributes } from '../serializer';
 import { getBlockTypes, registerBlockType, unregisterBlockType } from '../registration';
 
@@ -125,13 +126,15 @@ describe( 'block serializer', () => {
 			expect( attributes ).toEqual( {} );
 		} );
 
-		it( 'should only return attributes which cannot be inferred from the content', () => {
+		it( 'should only return attributes which are not matched from content', () => {
 			const attributes = getCommentAttributes( {
 				fruit: 'bananas',
 				category: 'food',
 				ripeness: 'ripe',
 			}, {
-				fruit: 'bananas',
+				fruit: text(),
+				category: String,
+				ripeness: String,
 			} );
 
 			expect( attributes ).toEqual( {
@@ -144,7 +147,10 @@ describe( 'block serializer', () => {
 			const attributes = getCommentAttributes( {
 				fruit: 'bananas',
 				ripeness: undefined,
-			}, {} );
+			}, {
+				fruit: String,
+				ripeness: String,
+			} );
 
 			expect( attributes ).toEqual( { fruit: 'bananas' } );
 		} );
@@ -168,10 +174,9 @@ describe( 'block serializer', () => {
 	describe( 'serialize()', () => {
 		it( 'should serialize the post content properly', () => {
 			const blockType = {
-				attributes: ( rawContent ) => {
-					return {
-						content: rawContent,
-					};
+				attributes: {
+					content: text(),
+					stuff: String,
 				},
 				save( { attributes } ) {
 					return <p dangerouslySetInnerHTML={ { __html: attributes.content } } />;

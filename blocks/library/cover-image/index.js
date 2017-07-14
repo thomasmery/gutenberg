@@ -32,6 +32,14 @@ registerBlockType( 'core/cover-image', {
 
 	attributes: {
 		title: text( 'h2' ),
+		url: String,
+		align: String,
+		id: Number,
+		hasParallax: Boolean,
+		hasBackgroundDim: {
+			type: Boolean,
+			defaultValue: true,
+		},
 	},
 
 	getEditWrapperProps( attributes ) {
@@ -42,7 +50,7 @@ registerBlockType( 'core/cover-image', {
 	},
 
 	edit( { attributes, setAttributes, focus, setFocus, className } ) {
-		const { url, title, align, id, hasParallax, hasBackgroundDim = true } = attributes;
+		const { url, title, align, id, hasParallax, hasBackgroundDim } = attributes;
 		const updateAlignment = ( nextAlign ) => setAttributes( { align: nextAlign } );
 		const onSelectImage = ( media ) => setAttributes( { url: media.url, id: media.id } );
 

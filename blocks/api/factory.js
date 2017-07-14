@@ -2,11 +2,19 @@
  * External dependencies
  */
 import uuid from 'uuid/v4';
-import { get, castArray, findIndex, isObjectLike, find } from 'lodash';
+import {
+	get,
+	reduce,
+	castArray,
+	findIndex,
+	isObjectLike,
+	find,
+} from 'lodash';
 
 /**
  * Internal dependencies
  */
+import { getNormalizedAttributeSource } from './parser';
 import { getBlockType } from './registration';
 
 /**
@@ -20,21 +28,28 @@ export function createBlock( name, attributes = {} ) {
 	// Get the type definition associated with a registered block.
 	const blockType = getBlockType( name );
 
-	// Do we need this? What purpose does it have?
-	let defaultAttributes;
-	if ( blockType ) {
-		defaultAttributes = blockType.defaultAttributes;
-	}
+	// Ensure attributes contains only values defined by block type, and merge
+	// default values for missing attributes.
+	attributes = reduce( blockType.attributes, ( result, source, key ) => {
+		const value = attributes[ key ];
+		if ( undefined !== value ) {
+			result[ key ] = value;
+		} else {
+			source = getNormalizedAttributeSource( source );
+			if ( source.defaultValue ) {
+				result[ key ] = source.defaultValue;
+			}
+		}
+
+		return result;
+	}, {} );
 
 	// Blocks are stored with a unique ID, the assigned type name,
 	// and the block attributes.
 	return {
 		uid: uuid(),
 		name,
-		attributes: {
-			...defaultAttributes,
-			...attributes,
-		},
+		attributes,
 	};
 }
 

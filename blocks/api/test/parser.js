@@ -6,10 +6,11 @@ import { noop } from 'lodash';
 /**
  * Internal dependencies
  */
-import { text } from '../query';
+import { text, attr, html } from '../query';
 import {
+	isValidMatcher,
 	getBlockAttributes,
-	parseBlockAttributes,
+	getMatcherAttributes,
 	createBlockWithFallback,
 	default as parse,
 } from '../parser';
@@ -21,7 +22,12 @@ import {
 } from '../registration';
 
 describe( 'block parser', () => {
-	const defaultBlockSettings = { save: noop };
+	const defaultBlockSettings = {
+		attributes: {
+			attr: String,
+		},
+		save: noop,
+	};
 
 	afterEach( () => {
 		setUnknownTypeHandler( undefined );
@@ -30,61 +36,72 @@ describe( 'block parser', () => {
 		} );
 	} );
 
-	describe( 'parseBlockAttributes()', () => {
-		it( 'should use the function implementation', () => {
-			const attributes = function( rawContent ) {
-				return {
-					content: rawContent + ' & Chicken',
-				};
-			};
-
-			expect( parseBlockAttributes( 'Ribs', attributes ) ).toEqual( {
-				content: 'Ribs & Chicken',
-			} );
+	describe( 'isValidMatcher()', () => {
+		it( 'returns false if falsey argument', () => {
+			expect( isValidMatcher() ).toBe( false );
 		} );
 
-		it( 'should use the query object implementation', () => {
-			const attributes = {
-				emphasis: text( 'strong' ),
-				ignoredDomMatcher: ( node ) => node.innerHTML,
+		it( 'returns true if valid matcher argument', () => {
+			expect( isValidMatcher( text() ) ).toBe( true );
+		} );
+
+		it( 'returns false if invalid matcher argument', () => {
+			expect( isValidMatcher( () => {} ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'getMatcherAttributes()', () => {
+		it( 'should return matched attributes from valid matchers', () => {
+			const sources = {
+				number: Number,
+				emphasis: {
+					matcher: text( 'strong' ),
+				},
 			};
 
 			const rawContent = '<span>Ribs <strong>& Chicken</strong></span>';
 
-			expect( parseBlockAttributes( rawContent, attributes ) ).toEqual( {
+			expect( getMatcherAttributes( rawContent, sources ) ).toEqual( {
 				emphasis: '& Chicken',
 			} );
 		} );
 
-		it( 'should return an empty object if no attributes defined', () => {
-			const attributes = {};
+		it( 'should return an empty object if no sources defined', () => {
+			const sources = {};
 			const rawContent = '<span>Ribs <strong>& Chicken</strong></span>';
 
-			expect( parseBlockAttributes( rawContent, attributes ) ).toEqual( {} );
+			expect( getMatcherAttributes( rawContent, sources ) ).toEqual( {} );
 		} );
 	} );
 
 	describe( 'getBlockAttributes()', () => {
 		it( 'should merge attributes with the parsed and default attributes', () => {
 			const blockType = {
-				attributes: function( rawContent ) {
-					return {
-						content: rawContent + ' & Chicken',
-					};
-				},
-				defaultAttributes: {
-					content: '',
-					topic: 'none',
+				attributes: {
+					content: text( 'div' ),
+					number: {
+						type: Number,
+						matcher: attr( 'div', 'data-number' ),
+					},
+					align: String,
+					topic: {
+						type: String,
+						defaultValue: 'none',
+					},
+					ignoredDomMatcher: {
+						matcher: ( node ) => node.innerHTML,
+					},
 				},
 			};
 
-			const rawContent = 'Ribs';
-			const attrs = { align: 'left' };
+			const rawContent = '<div data-number="10">Ribs</div>';
+			const attrs = { align: 'left', invalid: true };
 
 			expect( getBlockAttributes( blockType, rawContent, attrs ) ).toEqual( {
+				content: 'Ribs',
+				number: 10,
 				align: 'left',
 				topic: 'none',
-				content: 'Ribs & Chicken',
 			} );
 		} );
 	} );
@@ -141,11 +158,11 @@ describe( 'block parser', () => {
 	describe( 'parse()', () => {
 		it( 'should parse the post content, including block attributes', () => {
 			registerBlockType( 'core/test-block', {
-				// Currently this is the only way to test block content parsing?
-				attributes: function( rawContent ) {
-					return {
-						content: rawContent,
-					};
+				attributes: {
+					content: text(),
+					smoked: String,
+					url: String,
+					chicken: String,
 				},
 				save: noop,
 			} );
@@ -175,10 +192,8 @@ describe( 'block parser', () => {
 
 		it( 'should parse the post content, ignoring unknown blocks', () => {
 			registerBlockType( 'core/test-block', {
-				attributes: function( rawContent ) {
-					return {
-						content: rawContent + ' & Chicken',
-					};
+				attributes: {
+					content: text(),
 				},
 				save: noop,
 			} );
@@ -192,7 +207,7 @@ describe( 'block parser', () => {
 			expect( parsed ).toHaveLength( 1 );
 			expect( parsed[ 0 ].name ).toBe( 'core/test-block' );
 			expect( parsed[ 0 ].attributes ).toEqual( {
-				content: 'Ribs & Chicken',
+				content: 'Ribs',
 			} );
 			expect( typeof parsed[ 0 ].uid ).toBe( 'string' );
 		} );
@@ -220,11 +235,8 @@ describe( 'block parser', () => {
 		it( 'should parse the post content, including raw HTML at each end', () => {
 			registerBlockType( 'core/test-block', defaultBlockSettings );
 			registerBlockType( 'core/unknown-block', {
-				// Currently this is the only way to test block content parsing?
-				attributes: function( rawContent ) {
-					return {
-						content: rawContent,
-					};
+				attributes: {
+					content: html(),
 				},
 				save: noop,
 			} );

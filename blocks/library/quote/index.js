@@ -28,10 +28,11 @@ registerBlockType( 'core/quote', {
 	attributes: {
 		value: query( 'blockquote > p', node() ),
 		citation: children( 'footer' ),
-	},
-
-	defaultAttributes: {
-		value: [],
+		align: String,
+		style: {
+			type: Number,
+			defaultValue: 1,
+		},
 	},
 
 	transforms: {
@@ -114,7 +115,7 @@ registerBlockType( 'core/quote', {
 	},
 
 	edit( { attributes, setAttributes, focus, setFocus, mergeBlocks, className } ) {
-		const { align, value, citation, style = 1 } = attributes;
+		const { align, value, citation, style } = attributes;
 		const focusedEditable = focus ? focus.editable || 'value' : null;
 
 		return [
@@ -174,7 +175,7 @@ registerBlockType( 'core/quote', {
 	},
 
 	save( { attributes } ) {
-		const { align, value, citation, style = 1 } = attributes;
+		const { align, value, citation, style } = attributes;
 
 		return (
 			<blockquote className={ `blocks-quote-style-${ style }` }>

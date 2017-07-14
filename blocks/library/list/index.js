@@ -70,8 +70,14 @@ registerBlockType( 'core/list', {
 	category: 'common',
 
 	attributes: {
-		nodeName: prop( 'ol,ul', 'nodeName' ),
-		values: children( 'ol,ul' ),
+		nodeName: {
+			matcher: prop( 'ol,ul', 'nodeName' ),
+			defaultValue: 'OL',
+		},
+		values: {
+			matcher: children( 'ol,ul' ),
+			defaultValue: [],
+		},
 	},
 
 	className: false,
@@ -148,7 +154,7 @@ registerBlockType( 'core/list', {
 
 		isListActive( listType ) {
 			const { internalListType } = this.state;
-			const { nodeName = 'OL' } = this.props.attributes;
+			const { nodeName } = this.props.attributes;
 
 			return listType === ( internalListType ? internalListType : nodeName );
 		}
@@ -218,7 +224,7 @@ registerBlockType( 'core/list', {
 
 		render() {
 			const { attributes, focus, setFocus } = this.props;
-			const { nodeName = 'OL', values = [] } = attributes;
+			const { nodeName, values } = attributes;
 
 			return [
 				focus && (
@@ -268,7 +274,7 @@ registerBlockType( 'core/list', {
 	},
 
 	save( { attributes } ) {
-		const { nodeName = 'OL', values = [] } = attributes;
+		const { nodeName, values } = attributes;
 
 		return createElement(
 			nodeName.toLowerCase(),

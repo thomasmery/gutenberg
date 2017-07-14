@@ -3,6 +3,7 @@
         "uid": "_uid_0",
         "name": "core/gallery",
         "attributes": {
+            "align": "none",
             "images": [
                 {
                     "sizes": {
@@ -36,7 +37,8 @@
                     "url": "http://google.com/hi.png",
                     "alt": "title"
                 }
-            ]
+            ],
+            "imageCrop": true
         }
     }
 ]

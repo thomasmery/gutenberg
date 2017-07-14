@@ -2,7 +2,7 @@
  * External dependencies
  */
 import { nodeListToReact } from 'dom-react';
-import { find, get } from 'lodash';
+import { find, get, mapValues } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -14,7 +14,7 @@ import { createElement } from 'element';
  */
 import { createBlock } from './factory';
 import { getBlockTypes, getUnknownTypeHandler } from './registration';
-import { parseBlockAttributes } from './parser';
+import { getMatcherAttributes, getNormalizedAttributeSource } from './parser';
 
 /**
  * Normalises array nodes of any node type to an array of block level nodes.
@@ -89,10 +89,12 @@ export default function( nodes ) {
 				return acc;
 			}
 
-			const { name, defaultAttributes = [] } = blockType;
-			const attributes = parseBlockAttributes( node.outerHTML, transform.attributes );
+			const attributes = getMatcherAttributes(
+				node.outerHTML,
+				mapValues( transform.attributes, getNormalizedAttributeSource )
+			);
 
-			return createBlock( name, { ...defaultAttributes, ...attributes } );
+			return createBlock( blockType.name, attributes );
 		}, null );
 
 		if ( block ) {

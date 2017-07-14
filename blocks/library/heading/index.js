@@ -34,11 +34,14 @@ registerBlockType( 'core/heading', {
 
 	attributes: {
 		content: children( 'h1,h2,h3,h4,h5,h6' ),
-		nodeName: prop( 'h1,h2,h3,h4,h5,h6', 'nodeName' ),
-	},
-
-	defaultAttributes: {
-		nodeName: 'H2',
+		nodeName: {
+			matcher: prop( 'h1,h2,h3,h4,h5,h6', 'nodeName' ),
+			defaultValue: 'H2',
+		},
+		align: String,
+		placeholder: {
+			type: Object, // Array
+		},
 	},
 
 	transforms: {

@@ -27,6 +27,10 @@ registerBlockType( 'core/button', {
 		url: attr( 'a', 'href' ),
 		title: attr( 'a', 'title' ),
 		text: children( 'a' ),
+		align: {
+			type: String,
+			defaultValue: 'none',
+		},
 	},
 
 	getEditWrapperProps( attributes ) {
@@ -76,7 +80,7 @@ registerBlockType( 'core/button', {
 	},
 
 	save( { attributes } ) {
-		const { url, text, title, align = 'none' } = attributes;
+		const { url, text, title, align } = attributes;
 
 		return (
 			<div className={ `align${ align }` }>

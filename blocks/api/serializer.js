@@ -14,7 +14,7 @@ import { Component, createElement, renderToString, cloneElement, Children } from
  * Internal dependencies
  */
 import { getBlockType } from './registration';
-import { parseBlockAttributes } from './parser';
+import { getNormalizedAttributeSource } from './parser';
 
 /**
  * Returns the block's default classname from its name
@@ -71,36 +71,39 @@ export function getSaveContent( blockType, attributes ) {
 }
 
 /**
- * Returns attributes which ought to be saved
- * and serialized into the block comment header
+ * Returns attributes which are to be saved and serialized into the block
+ * comment delimiter.
  *
- * When a block exists in memory it contains as its attributes
- * both those which come from the block comment header _and_
- * those which come from parsing the contents of the block.
+ * When a block exists in memory it contains as its attributes both those
+ * parsed the block comment delimiter _and_ those which matched from the
+ * contents of the block.
  *
- * This function returns only those attributes which are
- * needed to persist and which cannot already be inferred
- * from the block content.
+ * This function returns only those attributes which are needed to persist and
+ * which cannot be matched from the block content.
  *
- * @param {Object<String,*>}   allAttributes         Attributes from in-memory block data
- * @param {Object<String,*>}   attributesFromContent Attributes which are inferred from block content
- * @returns {Object<String,*>} filtered set of attributes for minimum save/serialization
+ * @param   {Object<String,*>} allAttributes Attributes from in-memory block data
+ * @param   {Object<String,*>} sources       Block type attributes definition
+ * @returns {Object<String,*>}               Subset of attributes for comment serialization
  */
-export function getCommentAttributes( allAttributes, attributesFromContent ) {
-	// Iterate over attributes and produce the set to save
-	return reduce(
-		Object.keys( allAttributes ),
-		( toSave, key ) => {
-			const allValue = allAttributes[ key ];
-			const contentValue = attributesFromContent[ key ];
+export function getCommentAttributes( allAttributes, sources ) {
+	return reduce( sources, ( result, source, key ) => {
+		const value = allAttributes[ key ];
 
-			// save only if attribute if not inferred from the content and if valued
-			return ! ( contentValue !== undefined || allValue === undefined )
-				? Object.assign( toSave, { [ key ]: allValue } )
-				: toSave;
-		},
-		{},
-	);
+		// Ignore undefined values
+		if ( undefined === value ) {
+			return result;
+		}
+
+		// Ignore values sources from content
+		source = getNormalizedAttributeSource( source );
+		if ( source.matcher ) {
+			return result;
+		}
+
+		// Otherwise, include in comment set
+		result[ key ] = value;
+		return result;
+	}, {} );
 }
 
 export function serializeAttributes( attrs ) {
@@ -115,7 +118,7 @@ export function serializeBlock( block ) {
 	const blockName = block.name;
 	const blockType = getBlockType( blockName );
 	const saveContent = getSaveContent( blockType, block.attributes );
-	const saveAttributes = getCommentAttributes( block.attributes, parseBlockAttributes( saveContent, blockType.attributes ) );
+	const saveAttributes = getCommentAttributes( block.attributes, blockType.attributes );
 
 	if ( 'wp:core/more' === blockName ) {
 		return `<!-- more ${ saveAttributes.customText ? `${ saveAttributes.customText } ` : '' }-->${ saveAttributes.noTeaser ? '\n<!--noteaser-->' : '' }`;
