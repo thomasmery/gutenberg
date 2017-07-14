@@ -8,12 +8,12 @@ import { __ } from 'i18n';
  */
 import './style.scss';
 import './block.scss';
-import { registerBlockType, query as hpq } from '../../api';
+import { registerBlockType, matchers } from '../../api';
 import Editable from '../../editable';
 import BlockControls from '../../block-controls';
 import BlockAlignmentToolbar from '../../block-alignment-toolbar';
 
-const { children, query } = hpq;
+const { children, query } = matchers;
 
 registerBlockType( 'core/pullquote', {
 

@@ -117,7 +117,7 @@ add_action( 'enqueue_block_editor_assets', 'random_image_enqueue_block_editor_as
 // block.js
 ( function( blocks, element ) {
 	var el = element.createElement,
-		query = blocks.query;
+		matchers = blocks.matchers;
 
 	function RandomImage( props ) {
 		var src = 'http://lorempixel.com/400/200/' + props.category;
@@ -136,7 +136,7 @@ add_action( 'enqueue_block_editor_assets', 'random_image_enqueue_block_editor_as
 		category: 'media',
 
 		attributes: {
-			category: query.attr( 'img', 'alt' )
+			category: matchers.attr( 'img', 'alt' )
 		},
 
 		edit: function( props ) {

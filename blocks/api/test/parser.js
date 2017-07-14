@@ -6,7 +6,7 @@ import { noop } from 'lodash';
 /**
  * Internal dependencies
  */
-import { text } from '../query';
+import { text } from '../matchers';
 import {
 	getBlockAttributes,
 	parseBlockAttributes,
@@ -43,7 +43,7 @@ describe( 'block parser', () => {
 			} );
 		} );
 
-		it( 'should use the query object implementation', () => {
+		it( 'should use the matchers object implementation', () => {
 			const attributes = {
 				emphasis: text( 'strong' ),
 				ignoredDomMatcher: ( node ) => node.innerHTML,

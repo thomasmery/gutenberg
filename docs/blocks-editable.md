@@ -14,7 +14,7 @@ One challenge of maintaining the representation of a block as a JavaScript objec
 var el = wp.element.createElement,
 	registerBlockType = wp.blocks.registerBlockType,
 	Editable = wp.blocks.Editable,
-	children = wp.blocks.query.children;
+	children = wp.blocks.matchers.children;
 
 registerBlockType( 'gutenberg-boilerplate-es5/hello-world-step-03', {
 	title: 'Hello World (Step 3)',
@@ -57,8 +57,8 @@ registerBlockType( 'gutenberg-boilerplate-es5/hello-world-step-03', {
 ```
 {% ESNext %}
 ```js
-const { registerBlockType, Editable, query } = wp.blocks;
-const { children } = query;
+const { registerBlockType, Editable, matchers } = wp.blocks;
+const { children } = matchers;
 
 registerBlockType( 'gutenberg-boilerplate-esnext/hello-world-step-03', {
 	title: 'Hello World (Step 3)',

@@ -1,9 +1,9 @@
 /**
  * External dependencies
  */
-import * as query from './query';
+import * as matchers from './matchers';
 
-export { query };
+export { matchers };
 export { createBlock, switchToBlockType } from './factory';
 export { default as parse } from './parser';
 export { default as pasteHandler } from './paste';

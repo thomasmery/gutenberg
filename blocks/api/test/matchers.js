@@ -11,18 +11,18 @@ import { renderToString } from 'element';
 /**
  * Internal dependencies
  */
-import * as query from '../query';
+import * as matchers from '../matchers';
 
-describe( 'query', () => {
+describe( 'matchers', () => {
 	it( 'should generate matchers which apply internal flag', () => {
-		for ( const matcherFn in query ) {
-			expect( query[ matcherFn ]()._wpBlocksKnownMatcher ).toBe( true );
+		for ( const matcherFn in matchers ) {
+			expect( matchers[ matcherFn ]()._wpBlocksKnownMatcher ).toBe( true );
 		}
 	} );
 
 	describe( 'children()', () => {
 		it( 'should return a matcher function', () => {
-			const matcher = query.children();
+			const matcher = matchers.children();
 
 			expect( typeof matcher ).toBe( 'function' );
 		} );
@@ -31,7 +31,7 @@ describe( 'query', () => {
 			// Assumption here is that we can cleanly convert back and forth
 			// between a string and WPElement representation
 			const html = '<blockquote><p>A delicious sundae dessert</p></blockquote>';
-			const match = parse( html, query.children() );
+			const match = parse( html, matchers.children() );
 
 			expect( renderToString( match ) ).toBe( html );
 		} );
@@ -39,7 +39,7 @@ describe( 'query', () => {
 
 	describe( 'node()', () => {
 		it( 'should return a matcher function', () => {
-			const matcher = query.node();
+			const matcher = matchers.node();
 
 			expect( typeof matcher ).toBe( 'function' );
 		} );
@@ -48,7 +48,7 @@ describe( 'query', () => {
 			// Assumption here is that we can cleanly convert back and forth
 			// between a string and WPElement representation
 			const html = '<blockquote><p>A delicious sundae dessert</p></blockquote>';
-			const match = parse( html, query.node() );
+			const match = parse( html, matchers.node() );
 
 			expect( wp.element.renderToString( match ) ).toBe( `<body>${ html }</body>` );
 		} );

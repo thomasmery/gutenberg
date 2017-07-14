@@ -8,7 +8,7 @@ import { Placeholder, Dashicon, Toolbar } from 'components';
  * Internal dependencies
  */
 import './style.scss';
-import { registerBlockType, query } from '../../api';
+import { registerBlockType, matchers } from '../../api';
 import Editable from '../../editable';
 import MediaUploadButton from '../../media-upload-button';
 import InspectorControls from '../../inspector-controls';
@@ -18,7 +18,7 @@ import BlockAlignmentToolbar from '../../block-alignment-toolbar';
 import BlockDescription from '../../block-description';
 import UrlInput from '../../url-input';
 
-const { attr, children } = query;
+const { attr, children } = matchers;
 
 registerBlockType( 'core/image', {
 	title: __( 'Image' ),

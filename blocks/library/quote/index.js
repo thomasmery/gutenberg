@@ -13,12 +13,12 @@ import { Toolbar } from 'components';
  * Internal dependencies
  */
 import './block.scss';
-import { registerBlockType, createBlock, query as hpq } from '../../api';
+import { registerBlockType, createBlock, matchers } from '../../api';
 import AlignmentToolbar from '../../alignment-toolbar';
 import BlockControls from '../../block-controls';
 import Editable from '../../editable';
 
-const { children, node, query } = hpq;
+const { children, node, query } = matchers;
 
 registerBlockType( 'core/quote', {
 	title: __( 'Quote' ),

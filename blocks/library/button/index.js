@@ -9,12 +9,12 @@ import { IconButton } from 'components';
  */
 import './style.scss';
 import './block.scss';
-import { registerBlockType, query } from '../../api';
+import { registerBlockType, matchers } from '../../api';
 import Editable from '../../editable';
 import BlockControls from '../../block-controls';
 import BlockAlignmentToolbar from '../../block-alignment-toolbar';
 
-const { attr, children } = query;
+const { attr, children } = matchers;
 
 registerBlockType( 'core/button', {
 	title: __( 'Button' ),

@@ -7,10 +7,10 @@ import { __ } from 'i18n';
  * Internal dependencies
  */
 import './style.scss';
-import { registerBlockType, createBlock, query } from '../../api';
+import { registerBlockType, createBlock, matchers } from '../../api';
 import Editable from '../../editable';
 
-const { children } = query;
+const { children } = matchers;
 
 registerBlockType( 'core/verse', {
 	title: __( 'Verse' ),

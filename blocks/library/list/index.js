@@ -9,11 +9,11 @@ import { __ } from 'i18n';
  * Internal dependencies
  */
 import './style.scss';
-import { registerBlockType, query as hpq, createBlock } from '../../api';
+import { registerBlockType, matchers, createBlock } from '../../api';
 import Editable from '../../editable';
 import BlockControls from '../../block-controls';
 
-const { children, prop } = hpq;
+const { children, prop } = matchers;
 
 const fromBrDelimitedContent = ( content ) => {
 	if ( undefined === content ) {

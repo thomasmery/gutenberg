@@ -14,14 +14,14 @@ import { Toolbar } from 'components';
  * Internal dependencies
  */
 import './style.scss';
-import { registerBlockType, createBlock, query } from '../../api';
+import { registerBlockType, createBlock, matchers } from '../../api';
 import Editable from '../../editable';
 import BlockControls from '../../block-controls';
 import InspectorControls from '../../inspector-controls';
 import AlignmentToolbar from '../../alignment-toolbar';
 import BlockDescription from '../../block-description';
 
-const { children, prop } = query;
+const { children, prop } = matchers;
 
 registerBlockType( 'core/heading', {
 	title: __( 'Heading' ),

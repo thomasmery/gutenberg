@@ -12,9 +12,9 @@ import { __ } from 'i18n';
  * Internal dependencies
  */
 import './style.scss';
-import { registerBlockType, query } from '../../api';
+import { registerBlockType, matchers } from '../../api';
 
-const { prop } = query;
+const { prop } = matchers;
 
 registerBlockType( 'core/code', {
 	title: __( 'Code' ),

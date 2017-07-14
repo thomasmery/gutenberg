@@ -8,7 +8,7 @@ import { concatChildren } from 'element';
  * Internal dependencies
  */
 import './block.scss';
-import { registerBlockType, createBlock, query as hpq, setDefaultBlock } from '../../api';
+import { registerBlockType, createBlock, matchers, setDefaultBlock } from '../../api';
 import AlignmentToolbar from '../../alignment-toolbar';
 import BlockControls from '../../block-controls';
 import Editable from '../../editable';
@@ -16,7 +16,7 @@ import InspectorControls from '../../inspector-controls';
 import ToggleControl from '../../inspector-controls/toggle-control';
 import BlockDescription from '../../block-description';
 
-const { children, query } = hpq;
+const { children, query } = matchers;
 
 registerBlockType( 'core/text', {
 	title: __( 'Text' ),

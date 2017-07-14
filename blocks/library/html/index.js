@@ -13,10 +13,10 @@ import { Component } from 'element';
  * Internal dependencies
  */
 import './style.scss';
-import { registerBlockType, query } from '../../api';
+import { registerBlockType, matchers } from '../../api';
 import BlockControls from '../../block-controls';
 
-const { html } = query;
+const { html } = matchers;
 
 registerBlockType( 'core/html', {
 	title: __( 'Custom HTML' ),
