@@ -10,7 +10,7 @@ import { withInstanceId } from 'components';
  * WordPress dependencies
  */
 import { __ } from 'i18n';
-import { Component, findDOMNode } from 'element';
+import { Component } from 'element';
 import { ESCAPE } from 'utils/keycodes';
 
 /**
@@ -119,8 +119,7 @@ class PostVisibility extends Component {
 		];
 		const getVisibilityLabel = () => find( visibilityOptions, { value: visibility } ).label;
 
-		// Disable Reason: The input is inside the label, we shouldn't need the htmlFor
-		/* eslint-disable jsx-a11y/label-has-for */
+		/* eslint-disable jsx-a11y/no-static-element-interactions */
 		return (
 			<div className="editor-post-visibility">
 				<span>{ __( 'Visibility' ) }</span>
@@ -189,7 +188,7 @@ class PostVisibility extends Component {
 				}
 			</div>
 		);
-		/* eslint-enable jsx-a11y/label-has-for */
+		/* eslint-enable jsx-a11y/no-static-element-interactions */
 	}
 }
 
