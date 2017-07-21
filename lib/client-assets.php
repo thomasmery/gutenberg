@@ -431,7 +431,7 @@ function gutenberg_editor_scripts_and_styles( $hook ) {
 	gutenberg_extend_wp_api_backbone_client();
 
 	// Localize the wp-api settings and schema.
-	// TODO: Safety checks on valid response
+	// TODO: Safety checks on valid response.
 	wp_localize_script( 'wp-api', 'wpApiSettings', array(
 		'root'          => esc_url_raw( get_rest_url() ),
 		'nonce'         => wp_create_nonce( 'wp_rest' ),
