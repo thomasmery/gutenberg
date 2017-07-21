@@ -10,6 +10,7 @@ import 'moment-timezone/moment-timezone-utils';
 /**
  * WordPress dependencies
  */
+import { ApiProvider } from 'components';
 import { parse } from 'blocks';
 import { render } from 'element';
 import { settings } from 'date';
@@ -88,9 +89,11 @@ export function createEditorInstance( id, post ) {
 
 	render(
 		<ReduxProvider store={ store }>
-			<SlotFillProvider>
-				<Layout />
-			</SlotFillProvider>
+			<ApiProvider { ...wpApiSettings }>
+				<SlotFillProvider>
+					<Layout />
+				</SlotFillProvider>
+			</ApiProvider>
 		</ReduxProvider>,
 		document.getElementById( id )
 	);
