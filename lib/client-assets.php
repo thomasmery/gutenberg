@@ -430,6 +430,16 @@ function gutenberg_editor_scripts_and_styles( $hook ) {
 
 	gutenberg_extend_wp_api_backbone_client();
 
+	// Localize the wp-api settings and schema.
+	// TODO: Safety checks on valid response
+	wp_localize_script( 'wp-api', 'wpApiSettings', array(
+		'root'          => esc_url_raw( get_rest_url() ),
+		'nonce'         => wp_create_nonce( 'wp_rest' ),
+		'versionString' => 'wp/v2/',
+		'schema'        => rest_do_request( new WP_REST_Request( 'GET', '/wp/v2' ) )->get_data(),
+		'cacheSchema'   => true,
+	) );
+
 	// The editor code itself.
 	wp_enqueue_script(
 		'wp-editor',
@@ -553,7 +563,7 @@ function gutenberg_editor_scripts_and_styles( $hook ) {
 	);
 
 	// Initialize the editor.
-	wp_add_inline_script( 'wp-editor', 'wp.api.init().done( function() { wp.editor.createEditorInstance( \'editor\', window._wpGutenbergPost ); } );' );
+	wp_add_inline_script( 'wp-editor', 'wp.editor.createEditorInstance( \'editor\', window._wpGutenbergPost );' );
 
 	/**
 	 * Styles
