@@ -7,19 +7,25 @@ import { get, uniqueId } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { serialize, getBlockType, switchToBlockType } from 'blocks';
+import { parse, getBlockType, switchToBlockType } from 'blocks';
 import { __ } from 'i18n';
 
 /**
  * Internal dependencies
  */
 import { getGutenbergURL, getWPAdminURL } from './utils/url';
-import { focusBlock, replaceBlocks, createSuccessNotice, createErrorNotice } from './actions';
+import {
+	resetBlocks,
+	focusBlock,
+	replaceBlocks,
+	createSuccessNotice,
+	createErrorNotice,
+} from './actions';
 import {
 	getCurrentPost,
 	getCurrentPostType,
-	getBlocks,
 	getPostEdits,
+	getEditedPostContent,
 } from './selectors';
 
 export default {
@@ -30,19 +36,15 @@ export default {
 		const edits = getPostEdits( state );
 		const toSend = {
 			...edits,
-			content: serialize( getBlocks( state ) ),
+			content: getEditedPostContent( state ),
 			id: post.id,
 		};
 		const transactionId = uniqueId();
 
 		dispatch( {
-			type: 'CLEAR_POST_EDITS',
-			optimist: { type: BEGIN, id: transactionId },
-		} );
-		dispatch( {
 			type: 'UPDATE_POST',
 			edits: toSend,
-			optimist: { id: transactionId },
+			optimist: { type: BEGIN, id: transactionId },
 		} );
 		const Model = wp.api.getPostTypeModel( getCurrentPostType( state ) );
 		new Model( toSend ).save().done( ( newPost ) => {
@@ -206,5 +208,11 @@ export default {
 				...blocksWithTheSameType.slice( 1 ),
 			]
 		) );
+	},
+	RESET_POST( action ) {
+		const { post } = action;
+		if ( post.content ) {
+			return resetBlocks( parse( post.content.raw ) );
+		}
 	},
 };

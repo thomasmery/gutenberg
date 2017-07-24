@@ -13,6 +13,7 @@ import { registerBlockType, unregisterBlockType } from 'blocks';
  * Internal dependencies
  */
 import {
+	getPostRawValue,
 	editor,
 	currentPost,
 	hoveredBlock,
@@ -29,6 +30,20 @@ import {
 } from '../state';
 
 describe( 'state', () => {
+	describe( 'getPostRawValue', () => {
+		it( 'returns original value for non-rendered content', () => {
+			const value = getPostRawValue( '' );
+
+			expect( value ).toBe( '' );
+		} );
+
+		it( 'returns raw value for rendered content', () => {
+			const value = getPostRawValue( { raw: '' } );
+
+			expect( value ).toBe( '' );
+		} );
+	} );
+
 	describe( 'editor()', () => {
 		beforeAll( () => {
 			registerBlockType( 'core/test-block', {
@@ -397,23 +412,6 @@ describe( 'state', () => {
 				} );
 			} );
 
-			it( 'should reset modified properties', () => {
-				const original = editor( undefined, {
-					type: 'EDIT_POST',
-					edits: {
-						status: 'draft',
-						title: 'post title',
-						tags: [ 1 ],
-					},
-				} );
-
-				const state = editor( original, {
-					type: 'CLEAR_POST_EDITS',
-				} );
-
-				expect( state.edits ).toEqual( {} );
-			} );
-
 			it( 'should return same reference if clearing non-edited', () => {
 				const original = editor( undefined, {
 					type: 'EDIT_POST',
@@ -440,70 +438,6 @@ describe( 'state', () => {
 					status: 'draft',
 					title: 'post title',
 				} );
-			} );
-		} );
-
-		describe( 'dirty()', () => {
-			it( 'should be true when the post is edited', () => {
-				const state = editor( undefined, {
-					type: 'EDIT_POST',
-					edits: {},
-				} );
-
-				expect( state.dirty ).toBe( true );
-			} );
-
-			it( 'should change to false when the post is reset', () => {
-				const original = editor( undefined, {
-					type: 'EDIT_POST',
-					edits: {},
-				} );
-
-				const state = editor( original, {
-					type: 'RESET_BLOCKS',
-					post: {},
-					blocks: [],
-				} );
-
-				expect( state.dirty ).toBe( false );
-			} );
-
-			it( 'should not change from true when an unrelated action occurs', () => {
-				const original = editor( undefined, {
-					type: 'EDIT_POST',
-					edits: {},
-				} );
-
-				const state = editor( original, {
-					type: 'BRISKET_READY',
-				} );
-
-				expect( state.dirty ).toBe( true );
-			} );
-
-			it( 'should not change from false when an unrelated action occurs', () => {
-				const original = editor( undefined, {
-					type: 'RESET_BLOCKS',
-					post: {},
-					blocks: [],
-				} );
-
-				expect( original.dirty ).toBe( false );
-
-				const state = editor( original, {
-					type: 'BRISKET_READY',
-				} );
-
-				expect( state.dirty ).toBe( false );
-			} );
-
-			it( 'should be false when the post is initialized', () => {
-				const state = editor( undefined, {
-					type: 'SETUP_NEW_POST',
-					edits: {},
-				} );
-
-				expect( state.dirty ).toBe( false );
 			} );
 		} );
 
@@ -592,22 +526,22 @@ describe( 'state', () => {
 
 	describe( 'currentPost()', () => {
 		it( 'should reset a post object', () => {
-			const original = deepFreeze( { title: { raw: 'unmodified' } } );
+			const original = deepFreeze( { title: 'unmodified' } );
 
 			const state = currentPost( original, {
 				type: 'RESET_POST',
 				post: {
-					title: { raw: 'new post' },
+					title: 'new post',
 				},
 			} );
 
 			expect( state ).toEqual( {
-				title: { raw: 'new post' },
+				title: 'new post',
 			} );
 		} );
 
 		it( 'should update the post object with UPDATE_POST', () => {
-			const original = deepFreeze( { title: { raw: 'unmodified' }, status: 'publish' } );
+			const original = deepFreeze( { title: 'unmodified', status: 'publish' } );
 
 			const state = currentPost( original, {
 				type: 'UPDATE_POST',
@@ -617,7 +551,7 @@ describe( 'state', () => {
 			} );
 
 			expect( state ).toEqual( {
-				title: { raw: 'updated post object from server' },
+				title: 'updated post object from server',
 				status: 'publish',
 			} );
 		} );

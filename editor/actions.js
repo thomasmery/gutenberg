@@ -5,6 +5,21 @@ import uuid from 'uuid/v4';
 import { partial } from 'lodash';
 
 /**
+ * Returns an action object used in signalling that blocks state should be
+ * reset to the specified array of blocks, taking precedence over any other
+ * content reflected as an edit in state.
+ *
+ * @param  {Array}  blocks Array of blocks
+ * @return {Object}        Action object
+ */
+export function resetBlocks( blocks ) {
+	return {
+		type: 'RESET_BLOCKS',
+		blocks,
+	};
+}
+
+/**
  * Returns an action object used in signalling that the block with the
  * specified UID has been updated.
  *
