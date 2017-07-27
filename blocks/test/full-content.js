@@ -133,7 +133,16 @@ describe( 'full post content fixture', () => {
 				) );
 			}
 
-			const blocksActual = parse( content );
+			let blocksActual;
+			try {
+				blocksActual = parse( content );
+			} catch ( err ) {
+				throw new Error( format(
+					'Parse failed on content from \'%s.html\':\n\n%s',
+					f,
+					err.message
+				) );
+			}
 			const blocksActualNormalized = normalizeParsedBlocks( blocksActual );
 			let blocksExpectedString = readFixtureFile( f + '.json' );
 
@@ -172,7 +181,7 @@ describe( 'full post content fixture', () => {
 
 			if ( ! serializedExpected ) {
 				if ( process.env.GENERATE_MISSING_FIXTURES ) {
-					serializedExpected = serializedActual + '\n';
+					serializedExpected = serializedActual;
 					writeFixtureFile( f + '.serialized.html', serializedExpected );
 				} else {
 					throw new Error(
